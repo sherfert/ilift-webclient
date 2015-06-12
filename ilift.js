@@ -23,11 +23,18 @@ $(function(){
 			$(".alert-submit").hide();
 			$("#userId").parent().removeClass("has-error");
 			$.getJSON(GET_SESSIONS_BY_USER_ID+userId, function(sessions) {
-				$("#sessionsTable > tbody").empty();
-				$.each(sessions, function(index, value){				
-					appendTable(value);				
-				});
-			});		
+				if(sessions.length == 0){
+					$("#sessionTableContainer").hide();
+					$("#defaultContent").show();
+				} else {					
+					$("#sessionsTable > tbody").empty();
+					$("#defaultContent").hide();
+					$("#sessionTableContainer").show();
+					$.each(sessions, function(index, value){
+						appendTable(value);
+					});
+				}
+			});
 		}
 	});
 })

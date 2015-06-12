@@ -1,5 +1,9 @@
-.alert-submit{
+.alert-submit {
 	display: none;
 	margin-left: 10px;
 	color: red;
+}
+
+#sessionTableContainer, #defaultContent {
+	display: none;
 }
