@@ -4,6 +4,10 @@
 	color: red;
 }
 
-#sessionTableContainer, #defaultContent {
+#sessionTableContainer, #defaultContent, #sessionChartContainer {
 	display: none;
+}
+
+#sessionChartContainer {
+	text-align: center;	
 }

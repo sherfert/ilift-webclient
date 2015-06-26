@@ -4,6 +4,7 @@
 		<title>iLift</title>
 		<script type="text/javascript" src="jquery-2.1.4.min.js"></script>
 		<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="Chart.js"></script>
 		<script type="text/javascript" src="ilift.js"></script>
 		<link href="ilift.css" rel="stylesheet" type="text/css">
 		<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
@@ -28,7 +29,7 @@
 						</div>
 						<button type="submit" id="getSessions" class="btn btn-default">Submit</button>
 						<span class="alert-submit"></span>
-					</form>
+					</form>					
 					<ul class="nav navbar-nav navbar-right">
         				<li><a id="usernameLabel" href="#"></a></li>
         			</ul>
@@ -37,24 +38,40 @@
 		</nav>
 		<div class="container-fluid">
 			<h1>Welcome to iLift</h1>
-			<div id="defaultContent">
-				Nothing to show... do you even lift, bro?
+			<div id="defaultContent" class="row">				
+				<div>
+					Nothing to show... do you even lift, bro?
+				</div>
 			</div>
-			<div class="table-responsive" id="sessionTableContainer">
-				<table id="sessionsTable" class="table table-striped">
-				<caption>Your sessions so far</caption>
-				<thead>
-					<tr>
-						<th>Date</th>
-						<th>Exercise</th>
-						<th>Equipment</th>
-						<th>Repetitions</th>
-					</tr>
-				</thead>
-				<tbody>					
-				</tbody>
-				</table>
+
+			<div id="sessionChartContainer" class="row">				
+			  	<div class="col-md-12" >
+			  		<canvas id="sessionDoughnutChart" width="400" height="400"></canvas>
+		  		</div>
+			  	<!-- <div class="col-md-6">
+				  	<canvas id="sessionLineChart" width="600" height="400"></canvas>
+				</div> -->
 			</div>
+			
+			<div id="sessionTableContainer" class="row">
+				<div class="col-md-12">
+					<div class="table-responsive">
+						<table id="sessionsTable" class="table table-striped">							
+							<thead>
+								<tr>
+									<th>Date</th>
+									<th>Exercise</th>
+									<th>Equipment</th>
+									<th>Repetitions</th>
+								</tr>
+							</thead>
+							<tbody>					
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
 		</div>
 	</body>
 </html>
