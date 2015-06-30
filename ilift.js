@@ -1,5 +1,5 @@
 // Change this IP according to where the webservices are located
-const ADDRESS = "192.168.43.245";
+const ADDRESS = "192.168.43.181";
 
 // Webservices
 const GET_USER = "http://"+ADDRESS+":8080/ilift/user/byUsername/"
@@ -68,14 +68,17 @@ var data2 = {
 	Receives a session and adds a row to the session table
 */
 function appendTable(session) {
+	var totalRepetitions = Number(session.repetitions) + Number(session.badRepetitions);
+	var performanceRate = (100 * session.repetitions / totalRepetitions).toFixed(2);
 	$("#sessionsTable > tbody:last-child").append(" \
 		<tr> \
 			<td>"+session.date+"</td> \
 			<td>"+session.exercise.name+"</td> \
 			<td>"+session.equipment.type.name+" - "+session.equipment.weightKg+"Kg</td> \
-			<td>"+session.repetitions+"</td> \
-		</tr> \
-	");
+			<td>"+totalRepetitions+"</td> \
+			<td>"+performanceRate+" %</td> \
+		</tr>"
+	);
 }
 
 /* 
