@@ -1,6 +1,3 @@
-// Change this IP according to where the webservices are located
-const ADDRESS = "192.168.43.181";
-
 // Webservices
 const GET_USER = "http://"+ADDRESS+":8080/ilift/user/byUsername/"
 const GET_DOUGHNUT_CHART = "http://"+ADDRESS+":8080/ilift/session/sessionCounts/"
