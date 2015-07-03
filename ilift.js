@@ -8,8 +8,13 @@ const GET_SESSIONS_BY_USER_ID = "http://"+ADDRESS+":8080/ilift/session/byUserId/
 const GET_EXERCISES = "http://"+ADDRESS+":8080/ilift/exercise/all/"
 const GET_LINE_CHART = "http://"+ADDRESS+":8080/ilift/session/repetitions/"
 
+/* Context variables defined for the charts*/
 var ctxLineChart;
+var ctxDoughnutChart;
+
+/* Chart variables */
 var lineChart;
+var doughnutChart;
 
 // Colors
 function Color (mainColor, highlightColor) {
@@ -24,7 +29,9 @@ const greenColor  = new Color("#8FBB00", "#BEF800");
 
 const colorList = [blueColor, yellowColor, redColor, greenColor];
 
-// Doughnut chart object
+/*
+	Doughnut chart object	
+*/
 function DoughnutObject(value, color, label) {
 	this.value = value;
 	this.color = color.mainColor;
@@ -32,7 +39,9 @@ function DoughnutObject(value, color, label) {
 	this.label = label
 }
 
-//Line chart object
+/* 
+	Line chart object
+*/
 function LineObject(chartData) {
 	var labels = [];
 	var data = [];
@@ -102,6 +111,9 @@ function hideErrorMessage(){
 	$("#username").parent().removeClass("has-error");
 }
 
+/*
+	Displays a message indicating that there are no sessions
+*/
 function displayEmptyMessage() {
 	$("#sessionTableContainer").hide();
 	$("#defaultContent").show();
@@ -121,6 +133,11 @@ function showSessions(sessions) {
 
 //------------------WEBSERVICES--------------------
 
+
+/*
+	Gets a list of all the available exercises and fill a drop-down
+	input that controls the line chart
+*/
 function fetchExercises() {
 	$.getJSON(GET_EXERCISES, function(exercises){				
 		if(exercises === null){
@@ -137,6 +154,9 @@ function fetchExercises() {
 	});
 }
 
+/*
+	Gets all the exercise sessions for the specified username
+*/
 function fetchSessions(username){
 	$.getJSON(GET_USER+username, function(user){				
 		if(user === null){
@@ -156,6 +176,10 @@ function fetchSessions(username){
 	});
 }
 
+/*
+	Gets the data needed for creating the doughnut chart. The total number
+	of sessions for each exercise for the given user
+*/
 function fetchDoughnutChart(username){
 	$.getJSON(GET_DOUGHNUT_CHART+username, function(chartData){				
 		if(chartData === null){
@@ -165,12 +189,21 @@ function fetchDoughnutChart(username){
 			
 			var data = createDoughnutData(chartData);
 
-			var ctx = $("#sessionDoughnutChart").get(0).getContext("2d");
-			var sessionDoughnutChart = new Chart(ctx).Doughnut(data, { animateScale: false });
+			if(doughnutChart !== undefined) {
+				doughnutChart.destroy();
+			}
+
+			ctxDoughnutChart = $("#sessionDoughnutChart").get(0).getContext("2d");
+			doughnutChart = new Chart(ctxDoughnutChart).Doughnut(data, { animateScale: false });
 		}
 	});	
 }
 
+/*
+	Gets the data needed for creating the line chart. session data for the
+	indicated exercise and username. It limits the results fetched according
+	to the specified limit value
+*/
 function fetchLineChart(username, exercise, limit) {
 	$.getJSON(GET_LINE_CHART+username+"/"+exercise+"/"+limit, function(chartData){				
 		if(chartData === null){
@@ -179,7 +212,7 @@ function fetchLineChart(username, exercise, limit) {
 			$("#sessionChartContainer").show();
 			$("#sessionLineChart").empty();
 			
-			data = createLineChartData(chartData);
+			var data = createLineChartData(chartData);
 
 			if(lineChart !== undefined) {
 				lineChart.destroy();
