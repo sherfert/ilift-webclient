@@ -11,3 +11,8 @@
 #sessionChartContainer {
 	text-align: center;	
 }
+
+#sessionChartContainer form {
+	width: 30%;
+	margin: 0 auto;
+}

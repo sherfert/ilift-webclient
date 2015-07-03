@@ -5,6 +5,11 @@ const ADDRESS = "192.168.43.181";
 const GET_USER = "http://"+ADDRESS+":8080/ilift/user/byUsername/"
 const GET_DOUGHNUT_CHART = "http://"+ADDRESS+":8080/ilift/session/sessionCounts/"
 const GET_SESSIONS_BY_USER_ID = "http://"+ADDRESS+":8080/ilift/session/byUserId/";
+const GET_EXERCISES = "http://"+ADDRESS+":8080/ilift/exercise/all/"
+const GET_LINE_CHART = "http://"+ADDRESS+":8080/ilift/session/repetitions/"
+
+var ctxLineChart;
+var lineChart;
 
 // Colors
 function Color (mainColor, highlightColor) {
@@ -27,40 +32,39 @@ function DoughnutObject(value, color, label) {
 	this.label = label
 }
 
+//Line chart object
+function LineObject(chartData) {
+	var labels = [];
+	var data = [];
+	$.each(chartData, function(index, value) {
+		labels.push(value.name);
+		data.push(value.count);
+	});
+	this.labels = labels;
+	this.datasets = [{
+		label: "Exercise Performance",
+	    fillColor: "rgba(151,187,205,0.2)",
+        strokeColor: "rgba(151,187,205,1)",
+        pointColor: "rgba(151,187,205,1)",
+        pointStrokeColor: "#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "rgba(151,187,205,1)",
+	    data: data
+	}];
+}
+
 function createDoughnutData(chartData) {
 	var data = [];
-	$.each(chartData, function(index, value){
+	$.each(chartData, function(index, value) {
 		data.push(new DoughnutObject(value.count, colorList[index], value.name));
 	});
 	return data;
 }
 
-var data2 = {
-    labels: ["", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-        {
-            label: "My First dataset",
-            fillColor: "rgba(220,220,220,0.2)",
-            strokeColor: "rgba(220,220,220,1)",
-            pointColor: "rgba(220,220,220,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(220,220,220,1)",
-            data: [65, null, 40, null, 56, 55, 40]
-        },
-        {
-            label: "My Second dataset",
-            fillColor: "rgba(151,187,205,0.2)",
-            strokeColor: "rgba(151,187,205,1)",
-            pointColor: "rgba(151,187,205,1)",
-            pointStrokeColor: "#fff",
-            pointHighlightFill: "#fff",
-            pointHighlightStroke: "rgba(151,187,205,1)",
-            data: [28, 48, 40, 19, 86, 27, 90]
-        }
-    ]
-};
-
+function createLineChartData(chartData) {
+	var data = new LineObject(chartData);
+	return data;
+}
 
 //------------------HTML MANIPULATION--------------------
 
@@ -98,24 +102,40 @@ function hideErrorMessage(){
 	$("#username").parent().removeClass("has-error");
 }
 
+function displayEmptyMessage() {
+	$("#sessionTableContainer").hide();
+	$("#defaultContent").show();
+}
+
 /* 
 	Receives a list of sessions and updates the sessions table
 */
-function showSessions(sessions) {	
-	if(sessions.length == 0){
-		$("#sessionTableContainer").hide();
-		$("#defaultContent").show();
-	} else {					
-		$("#sessionsTable > tbody").empty();
-		$("#defaultContent").hide();
-		$("#sessionTableContainer").show();
-		$.each(sessions, function(index, value){
-			appendTable(value);
-		});
-	}	
+function showSessions(sessions) {		
+	$("#sessionsTable > tbody").empty();
+	$("#defaultContent").hide();
+	$("#sessionTableContainer").show();
+	$.each(sessions, function(index, value){
+		appendTable(value);
+	});
 }
 
 //------------------WEBSERVICES--------------------
+
+function fetchExercises() {
+	$.getJSON(GET_EXERCISES, function(exercises){				
+		if(exercises === null){
+			showErrorMessage("Ups, no exercises available");					
+		} else {
+			hideErrorMessage();
+			$.each(exercises, function(index, value){
+				$('#exercise-list')
+					.append($("<option></option>")
+			        .attr("value", value)
+			        .text(value));
+			});			
+		}
+	});
+}
 
 function fetchSessions(username){
 	$.getJSON(GET_USER+username, function(user){				
@@ -125,6 +145,13 @@ function fetchSessions(username){
 			hideErrorMessage()					
 			$("#usernameLabel").text(user.username);			
 			showSessions(user.sessions);
+			if(user.sessions.length == 0) {
+				displayEmptyMessage();
+			} else {
+				fetchDoughnutChart(user.username);
+				fetchLineChart(user.username, $("#exercise-list").val(), 5);				
+				showSessions(user.sessions);
+			}
 		}
 	});
 }
@@ -141,20 +168,38 @@ function fetchDoughnutChart(username){
 			var ctx = $("#sessionDoughnutChart").get(0).getContext("2d");
 			var sessionDoughnutChart = new Chart(ctx).Doughnut(data, { animateScale: false });
 		}
-	});
-	
+	});	
+}
 
-	// var ctx2 = $("#sessionLineChart").get(0).getContext("2d");
-	// var sessionLineChart = new Chart(ctx2).Line(data2, {
-	//     bezierCurve: true
-	// });
+function fetchLineChart(username, exercise, limit) {
+	$.getJSON(GET_LINE_CHART+username+"/"+exercise+"/"+limit, function(chartData){				
+		if(chartData === null){
+			console.log("No data for the chart");
+		} else {
+			$("#sessionChartContainer").show();
+			$("#sessionLineChart").empty();
+			
+			data = createLineChartData(chartData);
+
+			if(lineChart !== undefined) {
+				lineChart.destroy();
+			}
+
+			ctxLineChart = $("#sessionLineChart").get(0).getContext("2d");
+			lineChart = new Chart(ctxLineChart).Line(data, {
+			    bezierCurve: true
+			});
+		}
+	});
 }
 
 //-------------------HANDLERS-----------------------
 
 $(function() {
 
-	var username;	
+	var username;
+
+	fetchExercises();	
 
 	/* Invokes a web service with the username indicated by the user.
 	   if the username is valid (non empty and existing in the database),
@@ -166,8 +211,11 @@ $(function() {
 		if(!username){
 			showErrorMessage("Don't forget your username!");
 		} else {
-			fetchSessions(username);
-			fetchDoughnutChart(username);
+			fetchSessions(username);			
 		}
+	});
+
+	$("#exercise-list").on("change", function(){
+		fetchLineChart(username, this.value, 5);
 	});
 })
