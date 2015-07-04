@@ -1,7 +1,6 @@
 // Webservices
 const GET_USER = "http://"+ADDRESS+":8080/ilift/user/byUsername/"
 const GET_DOUGHNUT_CHART = "http://"+ADDRESS+":8080/ilift/session/sessionCounts/"
-const GET_SESSIONS_BY_USER_ID = "http://"+ADDRESS+":8080/ilift/session/byUserId/";
 const GET_EXERCISES = "http://"+ADDRESS+":8080/ilift/exercise/all/"
 const GET_LINE_CHART = "http://"+ADDRESS+":8080/ilift/session/repetitions/"
 
