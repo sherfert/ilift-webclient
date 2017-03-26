@@ -1,5 +1,7 @@
 ## iLift
 
+[Video](https://www.youtube.com/watch?v=PsBjm30TXc0)
+
 When going to the gym, one often faces problems like keeping count of repetitions and tracking the equipment and weight used each time. Another problem is keeping track of your overall progress and using this information to improve and make training plans.
 
 Our idea is approaching this by developing an application that integrates into the workout with minimal user interaction. The general flow of events would be a user picking up a piece of equipment (e.g. a dumbbell 10 kg), choosing the exercise he/she wants to do (e.g. biceps curl) on a touch screen, performing the exercise, and putting the equipment back. The system should detect and count the repetitions and save the information in an online service, that can be accessed later with a website.
@@ -15,7 +17,7 @@ Hardware needed:
 
 The projects need to be cloned:
 -  [Webservices](https://github.com/sherfert/ilift-webservices)
--  [Websclient](https://github.com/sherfert/ilift-webclient)
+-  [Webclient](https://github.com/sherfert/ilift-webclient)
 -  [Gadgeteer](https://github.com/sherfert/ilift-gadgeteer)
 
 1. Starting the REST Service
